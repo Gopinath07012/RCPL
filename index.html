@@ -1,123 +1,191 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RCPL - Season System</title>
+
 <style>
 body{
   margin:0;
-  font-family:Arial;
-  background: linear-gradient(135deg, #0b3d91, #021a40);
+  font-family: 'Segoe UI', Arial;
   color:white;
+  background: linear-gradient(135deg, #0b3d91, #021a40);
+  overflow-x:hidden;
 }
-header{text-align:center;padding:25px;background:#021a40}
-nav{display:flex;justify-content:center;gap:15px;background:#021a40;padding:10px}
-nav a{color:white;text-decoration:none}
-section{padding:25px}
-.card{background:white;color:black;padding:15px;border-radius:8px;margin:10px 0}
-button{padding:10px;background:#ffcc00;border:none;border-radius:5px;cursor:pointer}
-#adminPanel{display:none}
+
+/* LEFT IMAGE WITH OVERLAY */
+.left-image{
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 35%;
+  height: 100%;
+  overflow:hidden;
+}
+
+.left-image img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(70%);
+  transition: 0.5s;
+}
+
+.left-image img:hover{
+  transform: scale(1.05);
+}
+
+/* DARK OVERLAY */
+.left-image::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.4);
+}
+
+/* RIGHT CONTENT */
+.main-content{
+  margin-left: 35%;
+  animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* HEADER */
+header{
+  text-align:center;
+  padding:25px;
+  background:#021a40;
+  box-shadow:0 2px 10px rgba(0,0,0,0.5);
+}
+
+header h1{
+  margin:0;
+  font-size:28px;
+}
+
+header h2{
+  margin-top:5px;
+  font-weight:normal;
+  color:#ccc;
+}
+
+/* NAV */
+nav{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  background:#021a40;
+  padding:12px;
+}
+
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+nav a:hover{
+  color:#ffcc00;
+}
+
+/* SECTION */
+section{
+  padding:25px;
+}
+
+/* CARD */
+.card{
+  background: rgba(255,255,255,0.95);
+  color:black;
+  padding:20px;
+  border-radius:12px;
+  margin:10px 0;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+/* INPUT */
+input, select{
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+
+/* BUTTON */
+button{
+  padding:10px;
+  background:#ffcc00;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#ffaa00;
+}
 </style>
+
 </head>
-<body><header>
-<h1>🏏 RCPL</h1>
-<h2 id="seasonText"></h2>
-</header><nav>
-<a href="#register">Add Player</a>
-<a href="#list">Players</a>
-<a href="#admin">Admin</a>
-</nav><section id="register">
-<h3>Add Player</h3>
-<div class="card">
-<form onsubmit="addPlayer(event)">
-<input id="name" placeholder="Name" required><br>
-<input id="age" placeholder="Age" required><br>
-<select id="role">
-<option>Batsman</option>
-<option>Bowler</option>
-<option>All-Rounder</option>
-</select><br><br>
-<button>Add</button>
-</form>
+
+<body>
+
+<!-- LEFT IMAGE -->
+<div class="left-image">
+  <img src="GOI2.jpg" alt="Team Photo">
 </div>
-</section><section id="list">
-<h3>Players</h3>
-<div id="playerList"></div>
-</section><section id="admin">
-<h3>Admin</h3>
-<div class="card">
-<input type="password" id="pass" placeholder="Password">
-<button onclick="login()">Login</button>
-</div><div id="adminPanel" class="card">
-<h4>Season Control</h4>
-<input id="seasonNo" placeholder="Season No (e.g. 12)">
-<input id="seasonYear" placeholder="Year (e.g. 2027)">
-<button onclick="updateSeason()">Update Season</button><h4>Actions</h4>
-<button onclick="clearPlayers()">Clear Players</button>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+<header>
+  <h1>🏏 RCPL</h1>
+  <h2>Season-11 (2026)</h2>
+</header>
+
+<nav>
+  <a href="#">Add Player</a>
+  <a href="#">Players</a>
+  <a href="#">Admin</a>
+</nav>
+
+<section>
+  <h3>Add Player</h3>
+
+  <div class="card">
+    <input type="text" placeholder="Player Name">
+    <input type="number" placeholder="Age">
+
+    <select>
+      <option>Batsman</option>
+      <option>Bowler</option>
+      <option>All-Rounder</option>
+    </select>
+
+    <button>Add Player</button>
+  </div>
+
+  <h3>Players</h3>
+
+</section>
+
 </div>
-</section><script>
-let seasonNo = localStorage.getItem('seasonNo') || 11;
-let seasonYear = localStorage.getItem('seasonYear') || 2026;
 
-function updateHeader(){
- document.getElementById('seasonText').innerHTML = `Season-${seasonNo} (${seasonYear})`;
-}
-updateHeader();
-
-function getKey(){
- return 'players_'+seasonNo;
-}
-
-let players = JSON.parse(localStorage.getItem(getKey())) || [];
-displayPlayers();
-
-function addPlayer(e){
- e.preventDefault();
- let p={
-  name:document.getElementById('name').value,
-  age:document.getElementById('age').value,
-  role:document.getElementById('role').value
- };
- players.push(p);
- localStorage.setItem(getKey(), JSON.stringify(players));
- displayPlayers();
- e.target.reset();
-}
-
-function displayPlayers(){
- let d=document.getElementById('playerList');
- d.innerHTML='';
- players.forEach(p=>{
-  d.innerHTML+=`<div class='card'>${p.name} - ${p.role}</div>`;
- });
-}
-
-function login(){
- if(document.getElementById('pass').value==='rcpl123'){
-  document.getElementById('adminPanel').style.display='block';
- }
-}
-
-function updateSeason(){
- let newNo=document.getElementById('seasonNo').value;
- let newYear=document.getElementById('seasonYear').value;
-
- if(newNo) seasonNo=newNo;
- if(newYear) seasonYear=newYear;
-
- localStorage.setItem('seasonNo',seasonNo);
- localStorage.setItem('seasonYear',seasonYear);
-
- players = JSON.parse(localStorage.getItem(getKey())) || [];
- updateHeader();
- displayPlayers();
- alert('Season Updated');
-}
-
-function clearPlayers(){
- localStorage.removeItem(getKey());
- players=[];
- displayPlayers();
-}
-</script></body>
+</body>
 </html>
