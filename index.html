@@ -1,191 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RCPL - Season System</title>
+<title>RCPL Season-11</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
 body{
   margin:0;
-  font-family: 'Segoe UI', Arial;
+  font-family: Arial;
   color:white;
-  background: linear-gradient(135deg, #0b3d91, #021a40);
-  overflow-x:hidden;
+  background:#021a40;
 }
 
-/* LEFT IMAGE WITH OVERLAY */
+/* LEFT IMAGE */
 .left-image{
   position: fixed;
-  left: 0;
-  top: 0;
-  width: 35%;
-  height: 100%;
-  overflow:hidden;
-}
-
-.left-image img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(70%);
-  transition: 0.5s;
-}
-
-.left-image img:hover{
-  transform: scale(1.05);
-}
-
-/* DARK OVERLAY */
-.left-image::after{
-  content:"";
-  position:absolute;
-  top:0;
   left:0;
+  top:0;
+  width:35%;
+  height:100%;
+}
+.left-image img{
   width:100%;
   height:100%;
-  background: rgba(0,0,0,0.4);
+  object-fit:cover;
 }
 
-/* RIGHT CONTENT */
-.main-content{
-  margin-left: 35%;
-  animation: fadeIn 1s ease-in;
-}
-
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
-}
-
-/* HEADER */
-header{
-  text-align:center;
-  padding:25px;
-  background:#021a40;
-  box-shadow:0 2px 10px rgba(0,0,0,0.5);
-}
-
-header h1{
-  margin:0;
-  font-size:28px;
-}
-
-header h2{
-  margin-top:5px;
-  font-weight:normal;
-  color:#ccc;
-}
-
-/* NAV */
-nav{
-  display:flex;
-  justify-content:center;
-  gap:20px;
-  background:#021a40;
-  padding:12px;
-}
-
-nav a{
-  color:white;
-  text-decoration:none;
-  font-weight:bold;
-  transition:0.3s;
-}
-
-nav a:hover{
-  color:#ffcc00;
-}
-
-/* SECTION */
-section{
-  padding:25px;
-}
-
-/* CARD */
-.card{
-  background: rgba(255,255,255,0.95);
-  color:black;
+/* MAIN CONTENT */
+.main{
+  margin-left:35%;
   padding:20px;
-  border-radius:12px;
-  margin:10px 0;
-  box-shadow:0 5px 20px rgba(0,0,0,0.3);
-  transition:0.3s;
 }
 
-.card:hover{
-  transform:translateY(-5px);
+input,select,button{
+  padding:8px;
+  margin:5px;
 }
 
-/* INPUT */
-input, select{
-  width:100%;
+.card{
+  background:white;
+  color:black;
   padding:10px;
-  margin-bottom:10px;
-  border-radius:5px;
-  border:1px solid #ccc;
-}
-
-/* BUTTON */
-button{
-  padding:10px;
-  background:#ffcc00;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  font-weight:bold;
-  transition:0.3s;
-}
-
-button:hover{
-  background:#ffaa00;
+  margin-top:10px;
+  border-radius:8px;
 }
 </style>
-
 </head>
 
 <body>
 
 <!-- LEFT IMAGE -->
 <div class="left-image">
-  <img src="GOI2.jpg" alt="Team Photo">
+  <img src="GOI2.jpg">
 </div>
 
-<!-- MAIN CONTENT -->
-<div class="main-content">
+<!-- MAIN -->
+<div class="main">
+  <h1>RCPL Season-11 (2026)</h1>
 
-<header>
-  <h1>🏏 RCPL</h1>
-  <h2>Season-11 (2026)</h2>
-</header>
-
-<nav>
-  <a href="#">Add Player</a>
-  <a href="#">Players</a>
-  <a href="#">Admin</a>
-</nav>
-
-<section>
   <h3>Add Player</h3>
-
-  <div class="card">
-    <input type="text" placeholder="Player Name">
-    <input type="number" placeholder="Age">
-
-    <select>
-      <option>Batsman</option>
-      <option>Bowler</option>
-      <option>All-Rounder</option>
-    </select>
-
-    <button>Add Player</button>
-  </div>
+  <input id="name" placeholder="Name">
+  <input id="age" placeholder="Age">
+  <select id="role">
+    <option>Batsman</option>
+    <option>Bowler</option>
+    <option>All-Rounder</option>
+  </select>
+  <button onclick="addPlayer()">Add</button>
 
   <h3>Players</h3>
-
-</section>
-
+  <div id="players"></div>
 </div>
 
-</body>
-</html>
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "rcpl206.firebaseapp.com",
+  databaseURL: "https://rcpl206-default-rtdb.firebaseio.com",
+  projectId: "rcpl206",
+  storageBucket: "rcpl206.appspot.com",
+  messagingSenderId: "123214509684",
+  appId: "1:123214509684:web:xxxx"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+function addPlayer(){
+  const name = document.getElementById("name").value;
+  const age = document.getElementById("age").value;
+  const role = document.getElementById("role").value;
+
+  db.ref("players").push({
+    name, age, role
+  });
+}
+
+db.ref("players").on("value", snapshot=>{
+  const data = snapshot.val();
+  const div = document.getElementById("players");
+
+  div.innerHTML = "";
+
+  if(data){
+    for(let id in data){
+      div.innerHTML += `
+        <div class="card">
+          ${data[id].name} (${data[id].age}) - ${data[id].role}
+        </div>
+      `;
+    }
+  }
+});
